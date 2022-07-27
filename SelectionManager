@@ -1,0 +1,108 @@
+using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+
+public class SelectionManager : MonoBehaviour {
+
+	// Axes
+	public Color notSelected;
+	public Color isSelected;
+	public Color isHovering;
+
+	[Space(10)]
+	public string downButton;
+	public string upButton;
+
+	private bool isDown = false;
+	private bool isUp = false;
+
+	// Buttons
+	[Space(5)]
+	public string selectButton;
+	public string cancelButton;
+
+	// Debug
+	[Space(10)]
+	public GameObject[] buttonList;
+	public string currentlySelected;
+
+	[Space(5)]
+	public bool loopButtons;
+
+	private int index = 0;
+	private int buttonListLength;
+
+	void Start()
+	{
+		buttonListLength = buttonList.Length;
+	}
+
+	void Update()
+	{
+		VisualUpdate ();
+
+		ChangeItemHandler ();
+		SelectItemHandler ();
+	}
+
+	public void VisualUpdate()
+	{
+		for (int i = 0; i < buttonList.Length; i++) 
+		{
+			buttonList[i].GetComponent<Image> ().color = notSelected;
+		}
+		buttonList [index].GetComponent<Image> ().color = isHovering;
+	}
+
+	public void ChangeItemHandler()
+	{
+		// Axes Input
+		if ((!isDown) && (Input.GetAxisRaw(downButton) == 1))
+		{
+			isDown = true;
+			Invoke ("NextItem", 0.2f);
+		}
+
+		if ((!isUp) && (Input.GetAxisRaw(upButton) == 1))
+		{
+			isUp = true;
+			Invoke ("LastItem", 0.2f);
+		}
+	}
+
+	public void SelectItemHandler()
+	{
+		// Buttons Input
+		if (Input.GetButtonUp(selectButton))
+		{
+			buttonList [index].GetComponent<Image> ().color = isSelected;
+		}
+
+		if (Input.GetButtonUp(cancelButton))
+		{
+			print ("Cancel!");
+		}
+	}
+
+	public void NextItem()
+	{
+		if ((isDown) && (Input.GetAxisRaw(upButton) == 0))
+		{
+			index += 1;
+
+			currentlySelected = buttonList [index].name;
+			isDown = false;
+		}
+	}
+
+	public void LastItem()
+	{
+		if ((isUp) && (Input.GetAxisRaw(upButton) == 0))
+		{
+			index -= 1;
+
+			currentlySelected = buttonList [index].name;
+			isUp = false;
+		}
+	}
+}
